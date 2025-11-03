@@ -1,6 +1,6 @@
 # SpotifyWebProject
 
-Spotify Web Project.
+Mo Paw mo2
 
 ## Members 
 - Louis Spann
