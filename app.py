@@ -6,5 +6,6 @@ app = Flask(__name__)
 def home():
     return "Hello, world!"
 
+# Runs on 0.0.0.0 so that it can be accessed from the internet
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
