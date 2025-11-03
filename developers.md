@@ -19,7 +19,7 @@ Before creating a new branch, always make sure your own repo is up to date by pu
 
 `git checkout -b <branch-name>` creates a new branch and switches your current working directory to it. Using the commands `git branch <branch-name>` (creates new branch) and `git switch <branch-name>` (switches to branch) also works.
 
-View all currently created branches with `git branch -a`. The current branch will be displayed with a *.
+View all currently created branches with `git branch -a`. The current branch will be displayed with a *. You can also use `git branch --show-current` to view the name or your current branch directly.
 
 Merge finished branches back into main by first using `git switch main`, and then calling `git merge <branch-name>` from within the main branch. Once you're finished with a branch, delete it using `git branch -d <branch-name>`.
 
