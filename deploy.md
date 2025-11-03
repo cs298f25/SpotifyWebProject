@@ -1,1 +1,1 @@
-Will contain information on how to deploy the service.
+Run `./localdeploy.sh` to run the flask server locally.
