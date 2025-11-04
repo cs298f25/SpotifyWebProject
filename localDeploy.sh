@@ -6,4 +6,4 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Run the Flask application
-python app.py
+python3 app.py
