@@ -1,9 +1,7 @@
-# Create a virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
+#!/bin/bash
 
-# Install dependencies
-pip install -r requirements.txt
+# Source the virtual environment script (activates venv)
+source ./virtualEnvironment.sh
 
 # Run the Flask application
-python app.py
+python3 app.py
