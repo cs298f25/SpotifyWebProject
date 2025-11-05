@@ -1,0 +1,10 @@
+[Unit]
+Description=Launch the Flask server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/home/ec2-user/todo_aws/.venv/bin/gunicorn --chdir /home/ec2-user/todo_aws --bind 0.0.0.0:80 "todo_app:launch()"
+
+[Install]
+WantedBy=multi-user.target
