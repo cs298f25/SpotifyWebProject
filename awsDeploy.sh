@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Ready services
 sudo cp flask.service /etc/systemd/system/
 sudo systemctl daemon-reload
