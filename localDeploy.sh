@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # Source the virtual environment script (activates venv)
 source ./virtualEnvironment.sh
 
