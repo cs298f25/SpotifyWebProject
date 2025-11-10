@@ -1,7 +1,7 @@
 [Unit]
 Description=Launch the Flask server
-After=network-online.target
-Wants=network-online.target
+After=network-online.target redis.service
+Wants=network-online.target redis.service
 
 [Service]
 ExecStart=/home/ec2-user/SpotifyWebProject/.venv/bin/gunicorn --chdir /home/ec2-user/SpotifyWebProject --bind 0.0.0.0:80 "app:launch()"
