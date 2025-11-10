@@ -2,7 +2,7 @@
 
 # Install python
 sudo yum update -y
-sudo yum install python3 python3-pip git redis -y
+sudo yum install python3 python3-pip git -y
 sudo amazon-linux-extras install redis6 -y
 sudo /home/ec2-user/SpotifyWebProject/.venv/bin/python3 -m pip install --upgrade pip
 
@@ -19,8 +19,8 @@ sudo cp redis.service /etc/systemd/system
 
 sudo systemctl daemon-reload
 
-sudo systemctl enable flask
-sudo systemctl start flask
-
 sudo systemctl enable redis
 sudo systemctl start redis
+
+sudo systemctl enable flask
+sudo systemctl start flask
