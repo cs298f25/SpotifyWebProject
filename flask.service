@@ -1,13 +1,10 @@
 [Unit]
 Description=Launch the Flask server
-After=network-online.target redis6.service
+After=network-online.target redis.service
 Wants=network-online.target
 
 [Service]
-WorkingDirectory=/home/ec2-user/SpotifyWebProject
-EnvironmentFile=/home/ec2-user/SpotifyWebProject/.env
-ExecStart=/home/ec2-user/SpotifyWebProject/.venv/bin/gunicorn --bind 0.0.0.0:80 "app:app"
-Restart=on-failure
+ExecStart=/home/ec2-user/SpotifyWebProject/.venv/bin/gunicorn --chdir /home/ec2-user/SpotifyWebProject --bind 0.0.0.0:80 "app:launch()"
 
 [Install]
 WantedBy=multi-user.target
