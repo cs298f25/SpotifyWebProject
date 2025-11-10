@@ -13,5 +13,3 @@ cd /home/ec2-user/SpotifyWebProject
 source ./virtualEnvironment.sh
 
 sudo /home/ec2-user/SpotifyWebProject/.venv/bin/python3 -m pip install --upgrade pip
-
-
