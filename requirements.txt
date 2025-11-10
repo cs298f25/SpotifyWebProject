@@ -1,3 +1,5 @@
 Flask
 gunicorn
+redis
+python-dotenv
 pytest
