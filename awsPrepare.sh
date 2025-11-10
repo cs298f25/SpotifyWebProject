@@ -14,7 +14,4 @@ source ./virtualEnvironment.sh
 
 sudo /home/ec2-user/SpotifyWebProject/.venv/bin/python3 -m pip install --upgrade pip
 
-# Ready services
-sudo cp flask.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo ./awsDeploy.sh
+
