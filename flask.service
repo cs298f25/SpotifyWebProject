@@ -1,6 +1,6 @@
 [Unit]
 Description=Launch the Flask server
-After=network-online.target
+After=network-online.target redis.service
 Wants=network-online.target
 
 [Service]
