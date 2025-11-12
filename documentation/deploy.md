@@ -10,13 +10,6 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 ```
 
-## Session Encryption
-Used to encrypt sessions.
-
-```
-SECRET_KEY=<secret-key>
-```
-
 # Local Deploy
 
 Begin by following the .env instructions to create your environment variables. Then, run `./localdeploy.sh` to run the Flask server locally.
