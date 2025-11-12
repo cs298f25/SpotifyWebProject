@@ -4,6 +4,10 @@
     --element-color: #1b6b56;
 }
 
+.hidden {
+    display: none;
+}
+
 body {
     background-color: var(--background-color);
 }
