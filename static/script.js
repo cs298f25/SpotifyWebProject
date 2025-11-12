@@ -1,4 +1,48 @@
-console.log("Hello, world!");
+let startButton, game, textbox;
+
+function connectStart() {
+    game = document.getElementById("game")
+    startButton = document.getElementById("start")
+    startButton.onclick = startGame
+}
+
+async function startGame() {
+    console.log("test")
+    await fetch("/new-game"); // this is a get, so i don't need to do anything with json
+    
+    startButton.classList.add("hidden")
+    game.classList.remove("hidden")
+}
+
+function connectTextbox() {
+    textbox = document.getElementById("textbox");
+    textbox.addEventListener("keydown", async (event) => {
+        if (event.key !== "Enter") { return; }
+        await textboxSubmit();
+    })
+}
+
+async function textboxSubmit() {
+    submission = textbox.value;
+
+    const response = await fetch('/guess', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ "guess": submission })
+    });
+
+    const data = await response.json();
+    alert(data.result);
+
+    textbox.value = "";
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    connectStart();
+    connectTextbox();
+})
+
+
 
 /*
 require('dotenv').config(); // Load environment variables from .env file

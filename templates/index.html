@@ -5,11 +5,17 @@
         <link rel="stylesheet" type="text/css" href="/static/style.css">
     </head>
     <body>
-        <h1>Spotify Web Project</h1>
-        <h2>Hello, world!</h2>
+        <h1 id="title">Spotify Web Project</h1>
+        
+        <div id="start"> start </div>
 
+        <div id="game" class="hidden">
+            <input id="textbox" type="text" placeholder="Enter a Spotify artist">
 
-        <p>{{ value or '' }}</p>
+            <div id="guesses">
+
+            </div>
+        </div>
 
         <script src="/static/script.js"></script>
     </body>
