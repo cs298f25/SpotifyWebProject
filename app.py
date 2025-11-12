@@ -3,7 +3,8 @@ from flask import Flask, jsonify, session, render_template, request
 from pathlib import Path
 import os, dotenv, sys, random
 
-from artists import Artists
+from database import Database
+from games import Games
 
 required_env = ["REDIS_HOST", "REDIS_PORT", "SECRET_KEY"]
 
@@ -31,7 +32,7 @@ def _ensure_session_id():
 def get_game_key():
     return f"game:{_ensure_session_id()}"
 
-def create_app(secret_key, artists):
+def create_app(secret_key, games_service):
     app = Flask(__name__)
     app.secret_key = secret_key
 
@@ -41,28 +42,26 @@ def create_app(secret_key, artists):
 
     @app.get('/new-game')
     def new_game():
-        number = random.randint(1,10000)
-        artists.create_game(get_game_key(), number)
+        print("NEW GAMEEEE")
+        game_id = get_game_key()
+        answer = random.randint(1,100)
+        games_service.new_game(game_id, answer)
+        print(answer)
         return jsonify({"ok": True})
     
     @app.post('/guess')
     def submit_guess():
+        game_id = get_game_key()
+        game = games_service.get_game(game_id)
+        if not game:
+            return jsonify({"ok": False, "error": "Invalid session"})
+        
         data = request.json
         guess = int(data["guess"])
-
-        target = artists.get_answer(get_game_key())
-        if target is None:
-            return jsonify({"ok": False, "error": "Invalid session"}), 400
         
-        target = int(target)
-
-        if guess < target:
-            return jsonify({"result": "too low"})
-        elif guess > target:
-            return jsonify({"result": "too high"})
-        else:
-            return jsonify({"result": "correct!"})
-
+        result = game.guess(guess)
+        return jsonify({"ok": True, "result": result})
+        
     return app
 
 def check_required_env():
@@ -77,8 +76,10 @@ def launch():
     os.environ["SECRET_KEY"] = ensure_secret_key()
     check_required_env()
 
-    artist_service = Artists(os.getenv('REDIS_HOST'),int(os.getenv('REDIS_PORT')))
-    return create_app(os.getenv('SECRET_KEY'),artist_service)
+    database = Database(os.getenv('REDIS_HOST'),int(os.getenv('REDIS_PORT')))
+
+    games_service = Games(database)
+    return create_app(os.getenv('SECRET_KEY'), games_service)
 
 if __name__ == '__main__':
     app = launch()

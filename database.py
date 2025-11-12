@@ -1,11 +1,11 @@
 import redis
 
-class Artists():
+class Database():
     def __init__(self, host, port) -> None:
         self.storage = redis.Redis(
             host=host,
             port=port,
-            decode_responses=True, # decode the byte responses from redis to python strings
+            decode_responses=True,
         )
 
     def create_game(self, game_key, answer):
