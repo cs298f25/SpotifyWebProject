@@ -72,11 +72,14 @@ def check_required_env():
             print(f"ERROR: {variable} environment variable must be set", file=sys.stderr)
             sys.exit(1)
 
-if __name__ == '__main__':
+def launch():
     dotenv.load_dotenv()
     os.environ["SECRET_KEY"] = ensure_secret_key()
     check_required_env()
 
     artist_service = Artists(os.getenv('REDIS_HOST'),int(os.getenv('REDIS_PORT')))
-    app = create_app(os.getenv('SECRET_KEY'),artist_service)
+    return create_app(os.getenv('SECRET_KEY'),artist_service)
+
+if __name__ == '__main__':
+    app = launch()
     app.run(host='0.0.0.0', port=80, debug=True)
