@@ -5,8 +5,15 @@ import os, dotenv, sys, random
 
 from database import Database
 from games import Games
+from spotify import spotify_bp
 
-required_env = ["REDIS_HOST", "REDIS_PORT", "SECRET_KEY"]
+required_env = [
+    "REDIS_HOST",
+    "REDIS_PORT",
+    "SECRET_KEY",
+    "SPOTIFY_CLIENT_ID",
+    "SPOTIFY_CLIENT_SECRET",
+]
 
 def ensure_secret_key():
     key = os.getenv("SECRET_KEY")
@@ -35,6 +42,7 @@ def get_game_key():
 def create_app(secret_key, games_service):
     app = Flask(__name__)
     app.secret_key = secret_key
+    app.register_blueprint(spotify_bp)
 
     @app.route('/')
     def home():
@@ -61,7 +69,6 @@ def create_app(secret_key, games_service):
         
         result = game.guess(guess)
         return jsonify({"ok": True, "result": result})
-        
     return app
 
 def check_required_env():

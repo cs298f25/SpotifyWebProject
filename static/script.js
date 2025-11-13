@@ -1,4 +1,5 @@
 let startButton, game, textbox;
+let artistResult;
 
 function connectStart() {
     game = document.getElementById("game")
@@ -37,11 +38,20 @@ async function textboxSubmit() {
     textbox.value = "";
 }
 
+async function loadArtist() {
+    artistResult = document.getElementById("artistResult");
+    if (!artistResult) { return; }
+
+    const response = await fetch('/artist');
+    const data = await response.json();
+    artistResult.textContent = JSON.stringify(data, null, 2);
+}
+
 document.addEventListener("DOMContentLoaded", function() {
     connectStart();
     connectTextbox();
+    loadArtist();
 })
-
 
 
 /*
