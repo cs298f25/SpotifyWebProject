@@ -1,22 +1,17 @@
-import base64 #for decoding the client id and secret
-import os #for getting the client id and secret from the environment variables
-
-import requests #for making the request to the Spotify API
-from flask import Blueprint, jsonify #for creating the blueprint and returning the json response
-# Blueprint is the 
-
+import base64
+import os
+import requests
+from flask import Blueprint, jsonify
 
 spotify_bp = Blueprint("spotify", __name__)
-artist_id="0TnOYISbd1XYRBk9myaseg" # artist id for pitbull 
+artist_id = "0TnOYISbd1XYRBk9myaseg" # pitbull
 
 
 def _request_access_token():
     client_id = os.getenv("SPOTIFY_CLIENT_ID")
     client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
 
-    auth_header = base64.b64encode(f"{client_id}:{client_secret}".encode("utf-8")).decode(
-        "utf-8"
-    ) #must be encoded in base64 or spotify will not accept the request
+    auth_header = base64.b64encode(f"{client_id}:{client_secret}".encode("utf-8")).decode("utf-8")
 
     response = requests.post(
         "https://accounts.spotify.com/api/token",
