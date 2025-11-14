@@ -11,11 +11,11 @@ REDIS_PORT=6379
 ```
 
 ## Spotify
-Get your Spotify client id and secret from the dashboard at [Spotify developer's dashboard](https://developer.spotify.com/).
+Get your Spotify client id and secret from an app from your [Spotify developer dashboard](https://developer.spotify.com/).
 
 ```
 SPOTIFY_CLIENT_ID=<client_id>
-SPOTIFY_CLIENT_SECRET<client_secret>
+SPOTIFY_CLIENT_SECRET=<client_secret>
 ```
 
 # Local Deploy
@@ -28,6 +28,6 @@ Create a new EC2 instance. Allow inbound connections from port 80 (HTTP) and upl
 
 At this point in the process, you must follow the .env instructions.
 
-To finalize deployment, run `awsDeploy.sh`, which will finish launching the server.
+To finalize deployment, run `./awsDeploy.sh`, which will finish launching the server.
 
 **WE NEED INFO ABOUT SPOTIFY CLIENT**
