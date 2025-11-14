@@ -4,7 +4,7 @@ After=network-online.target redis.service
 Wants=network-online.target
 
 [Service]
-ExecStart=/home/ec2-user/SpotifyWebProject/.venv/bin/gunicorn --chdir /home/ec2-user/SpotifyWebProject --bind 0.0.0.0:80 "app:launch()"
+ExecStart=/home/ec2-user/SpotifyWebProject/.venv/bin/gunicorn --chdir /home/ec2-user/SpotifyWebProject --bind 0.0.0.0:80 "src.app:launch()"
 
 [Install]
 WantedBy=multi-user.target

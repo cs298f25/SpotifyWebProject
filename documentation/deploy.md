@@ -10,6 +10,14 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 ```
 
+## Spotify
+Get your Spotify client id and secret from the dashboard at [Spotify developer's dashboard](https://developer.spotify.com/).
+
+```
+SPOTIFY_CLIENT_ID=<client_id>
+SPOTIFY_CLIENT_SECRET<client_secret>
+```
+
 # Local Deploy
 
 Begin by following the .env instructions to create your environment variables. Then, run `./localdeploy.sh` to run the Flask server locally.
