@@ -16,4 +16,4 @@ until redis-cli ping &>/dev/null; do
 done
 
 # Run the Flask application
-python3 app.py
+python3 src/app.py
