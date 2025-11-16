@@ -34,7 +34,7 @@ def ensure_secret_key():
         return key
     
     key = secrets.token_hex(32)
-    env_path = Path(".env")
+    env_path = project_root / ".env"
     if not env_path.exists():
         env_path.write_text(f"\nSECRET_KEY={key}\n")
     else:
