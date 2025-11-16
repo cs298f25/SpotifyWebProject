@@ -9,6 +9,7 @@ import random
 # Add project root and src to path for imports
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root / "src"))
 template_dir = str(project_root / "templates")
 static_dir = str(project_root / "static")
 
@@ -97,7 +98,8 @@ def check_required_env():
             sys.exit(1)
 
 def launch():
-    dotenv.load_dotenv()
+    # Load .env from project root
+    dotenv.load_dotenv(dotenv_path=project_root / ".env")
     os.environ["SECRET_KEY"] = ensure_secret_key()
     check_required_env()
 
