@@ -5,4 +5,4 @@ Spotify Web Project.
 ## Members 
 - Louis Spann
 - Jack Wagenheim
-- Mohammad Alzoubi
+- Mohammad Al-zoubi
