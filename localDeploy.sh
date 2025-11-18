@@ -1,11 +1,15 @@
 #!/bin/bash
 
+# Run this command if you haven't made the virtual environment.sh script executable
+# chmod +x virtualEnvironment.sh
+
 # Source the virtual environment script (activates venv)
 source ./virtualEnvironment.sh
 
-# Install redis
+# Install redis (may prompt for password)
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install redis
+
 
 # Start Redis in the background (so the script continues)
 redis-server --daemonize yes
