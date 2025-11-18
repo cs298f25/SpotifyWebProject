@@ -38,34 +38,38 @@ async function textboxSubmit() {
     textbox.value = "";
 }
 
-async function loadArtist() {
-    artistResult = document.getElementById("artistResult");
-    if (!artistResult) { return; }
+function connectMusicbrainSearch() {
+    const searchButton = document.getElementById("musicbrainSearchButton");
+    const searchInput = document.getElementById("musicbrainSearchInput");
+    
+    // if the user clicks the search button, perform the artist search
+    searchButton.onclick = async () => {
+        await performMusicbrainSearch();
+    };
+    
+    // if the user presses enter, perform the artist search
+    searchInput.addEventListener("keydown", async (event) => {
+        if (event.key === "Enter") {
+            await performMusicbrainSearch();
+        }
+    });
+}
 
-    const response = await fetch('/artist');
+async function performMusicbrainSearch() {
+    const searchInput = document.getElementById("musicbrainSearchInput");
+    const resultElement = document.getElementById("musicbrainSearchResult");
+    
+    const query = searchInput.value.trim();
+    
+    const response = await fetch(`/musicbrain/search?q=${encodeURIComponent(query)}`);
     const data = await response.json();
-    artistResult.textContent = JSON.stringify(data, null, 2);
+    resultElement.textContent = JSON.stringify(data, null, 2);
 }
 
 document.addEventListener("DOMContentLoaded", function() {
     connectStart();
     connectTextbox();
-    loadArtist();
+    connectMusicbrainSearch();
 })
 
-
-/*
-require('dotenv').config(); // Load environment variables from .env file
-
-const express = require('express');
-const SpotifyWebApi = require('spotify-web-api-node');
-
-const app = express();
-
-const spotifyApi = new SpotifyWebApi({
-    clientId: process.env.CLIENT_ID,
-    clientSecret: process.env.CLIENT_SECRET,
-    redirectUri: process.env.REDIRECT_URI, // TODO: Change to actual redirect URI
-});
-*/
 

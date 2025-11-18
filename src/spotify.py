@@ -1,12 +1,8 @@
 import base64
 import os
 import requests
-from flask import Blueprint, jsonify
 
-spotify_bp = Blueprint("spotify", __name__)
-artist_id = "0TnOYISbd1XYRBk9myaseg" # pitbull
-
-
+# Requests an access token from Spotify with the client id and client secret
 def _request_access_token():
     client_id = os.getenv("SPOTIFY_CLIENT_ID")
     client_secret = os.getenv("SPOTIFY_CLIENT_SECRET")
@@ -25,22 +21,16 @@ def _request_access_token():
     response.raise_for_status()
     return response.json()
 
-
-@spotify_bp.get("/token")
-def get_token():
-    token_data = _request_access_token()
-    return jsonify(token_data)
-
-
-@spotify_bp.get("/artist")
-def get_default_artist():
+# Gets the popularity of an artist by query
+def get_artist_popularity(query):
     token_data = _request_access_token()
     response = requests.get(
-        f"https://api.spotify.com/v1/artists/{artist_id}",
+        f"https://api.spotify.com/v1/search?q={query}&type=artist&limit=1",
         headers={"Authorization": f"Bearer {token_data['access_token']}"},
         timeout=10,
     )
     response.raise_for_status()
-    return jsonify(response.json())
-
+    data = response.json()
+    artist = data["artists"]["items"][0]
+    return artist["popularity"]
 
