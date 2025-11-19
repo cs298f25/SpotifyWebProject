@@ -1,18 +1,7 @@
 import musicbrainzngs
 import os
-import ssl
-import certifi
-import urllib.request
 from flask import Blueprint, jsonify, request
 from spotify import get_artist_popularity
-
-# Configure SSL to use certifi's certificate bundle for urllib (used by musicbrainzngs)
-# This fixes SSL certificate verification issues on macOS.
-# For detailed explanation, see documentation/api.md under "MusicBrainz API > Errors > SSL Certificate Verification Error"
-ssl_context = ssl.create_default_context(cafile=certifi.where())
-https_handler = urllib.request.HTTPSHandler(context=ssl_context)
-opener = urllib.request.build_opener(https_handler)
-urllib.request.install_opener(opener)
 
 musicbrain_bp = Blueprint("musicbrain", __name__)
 
