@@ -287,8 +287,25 @@ MusicBrainz API has rate limits:
 - Empty tag list (no tags available for artist) - returns `None` for tag field
 - Invalid MBID format (if manually calling `get_artist_by_id()`)
 - Rate limit exceeded (requests may be throttled or blocked)
+- **SSL Certificate Verification Error** (common on macOS): `[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate`
+
+**SSL Certificate Verification Error - Detailed Explanation:**
+
+This error occurs when Python cannot verify SSL certificates for HTTPS requests. Here's why it happens:
+
+1. **SSL Certificate Verification**: When Python makes HTTPS requests, it must verify that the server's SSL certificate is valid and issued by a trusted Certificate Authority (CA). This prevents man-in-the-middle attacks and ensures secure communication.
+
+2. **Certificate Store Location**: Python needs access to a "certificate bundle" - a file containing all trusted CA certificates. On macOS, Python installations (especially those from python.org or Homebrew) often don't automatically have access to the system's certificate store (Keychain). Instead, Python looks for certificates in:
+   - The certifi package's bundle (if installed)
+   - System locations that may not exist
+   - Environment variables (SSL_CERT_FILE, REQUESTS_CA_BUNDLE)
+
+3. **musicbrainzngs Library**: The musicbrainzngs library uses Python's `urllib.request` module internally to make HTTPS requests to the MusicBrainz API. When urllib tries to verify the SSL certificate, it can't find a valid certificate bundle, resulting in: `"certificate verify failed: unable to get local issuer certificate"`.
+
+4. **The Fix**: The application uses the `certifi` package, which provides a curated, up-to-date bundle of CA certificates. The code in `src/musicbrain.py` creates an SSL context using certifi's certificate bundle and installs it as the default opener for urllib, ensuring all HTTPS requests (including those from musicbrainzngs) can properly verify SSL certificates.
 
 **Error Handling:**
 - The application does not catch or handle exceptions from MusicBrainz API calls
 - Errors will propagate to Flask and return `500 Internal Server Error`
 - Missing tags are handled gracefully (returns `None` instead of raising an error)
+- SSL certificate issues are resolved by installing `certifi` and configuring urllib to use it (see `src/musicbrain.py`)
