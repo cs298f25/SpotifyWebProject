@@ -4,3 +4,5 @@ redis
 python-dotenv
 pytest
 requests
+musicbrainzngs
+certifi
