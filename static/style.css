@@ -2,12 +2,255 @@
     --background-color: #209d7b;
     --text-color: white;
     --element-color: #1b6b56;
+
+    --spotify-green: #1db954;
+    --spotify-dark: #121212;
+    --spotify-mid: #1a1a1a;
 }
 
 .hidden {
     display: none;
 }
 
+
 body {
     background-color: var(--background-color);
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: var(--text-color);
+
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 12px;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 600px;
+}
+
+#title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+
+#start {
+    font-size: 1.2rem;
+    padding: 8px 14px;
+    background: var(--spotify-green);
+    color: black;
+    border-radius: 8px;
+    cursor: pointer;
+    width: 140px;
+    margin: 0 auto 20px auto;
+    text-align: center;
+}
+
+
+#game {
+    max-width: 480px;
+    width: 100%;
+    margin: 20px auto;
+}
+
+#game h2,
+#artist-search h2 {
+    text-align: center;
+}
+
+
+#guess-row,
+.search-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+input[type="text"] {
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    width: 220px;
+}
+
+button {
+    padding: 8px 14px;
+    background: var(--spotify-green);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+
+#musicbrainSearchResult {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+}
+
+.search-card {
+    background-color: #181818;
+    border: 1px solid #1db95455;
+    border-radius: 14px;
+    padding: 16px;
+    width: 420px;
+    color: white;
+    box-shadow: 0 0 8px #00000055;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+}
+
+.search-card:hover {
+    transform: scale(1.02);
+    background-color: #202020;
+    box-shadow: 0 0 14px #00000088;
+}
+
+.search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.search-title {
+    font-size: 1.05rem;
+    font-weight: bold;
+}
+
+.search-tag-pill {
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background-color: #1db95422;
+    color: #1db954;
+    text-transform: capitalize;
+}
+
+.search-subtitle {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    opacity: 0.85;
+}
+
+.search-stats {
+    margin-top: 8px;
+    font-size: 0.8rem;
+}
+
+.search-stat-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    opacity: 0.9;
+}
+
+
+
+#guesses {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    align-items: center;
+}
+
+.guess-card {
+    background-color: var(--spotify-dark);
+    border: 1px solid var(--spotify-green);
+    border-radius: 14px;
+    padding: 18px;
+    width: 420px;
+    color: white;
+    box-shadow: 0 0 10px #00000055;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.guess-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 16px #00000088;
+}
+
+.guess-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.05rem;
+    font-weight: bold;
+    color: var(--spotify-green);
+}
+
+.guess-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.guess-result-pill {
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.guess-result-pill.correct {
+    background-color: var(--spotify-green);
+    color: #000;
+}
+
+.guess-result-pill.incorrect {
+    background-color: #2f2f2f;
+    color: #eee;
+}
+
+.guess-field-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 7px 0;
+}
+
+.field-label {
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.field-badge {
+    padding: 4px 12px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+
+.field-badge.match {
+    background-color: var(--spotify-green);
+    color: #000;
+}
+
+.field-badge.no_match {
+    background-color: #2f2f2f;
+    color: #ccc;
+}
+
+.field-badge.higher {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.field-badge.lower {
+    background-color: #e67e22;
+    color: #fff;
+}
+
+.field-badge.unknown {
+    background-color: #555;
+    color: #eee;
 }
