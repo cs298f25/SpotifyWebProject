@@ -20,7 +20,6 @@ window.onload = () => {
     connectStart();
     connectTextbox();
     connectGuessButton();
-    connectMusicbrainSearch();
 };
 
 
@@ -33,7 +32,7 @@ function connectStart() {
 async function startGame() {
     console.log("Starting new game...");
 
-    showLoading(startButton, "Starting...");
+    showLoading(startButton, "Loading...");
 
     const response = await fetch("/new-game");
     hideLoading(startButton);
@@ -44,6 +43,10 @@ async function startGame() {
     }
 
     startButton.classList.add("hidden");
+    const preGameMessage = document.getElementById("pre-game-message");
+    if (preGameMessage) {
+        preGameMessage.classList.add("hidden");
+    }
     game.classList.remove("hidden");
 
     // Clear old guesses & any old Game Over card
@@ -122,52 +125,6 @@ function disableGuessing() {
 }
 
 
-function connectMusicbrainSearch() {
-    const searchButton = document.getElementById("musicbrainSearchButton");
-    const searchInput = document.getElementById("musicbrainSearchInput");
-
-    searchButton.onclick = async () => {
-        showLoading(searchButton, "Searching...");
-        await performMusicbrainSearch();
-        hideLoading(searchButton);
-    };
-
-    searchInput.addEventListener("keydown", async (event) => {
-        if (event.key === "Enter") {
-            showLoading(searchButton, "Searching...");
-            await performMusicbrainSearch();
-            hideLoading(searchButton);
-        }
-    });
-}
-
-async function performMusicbrainSearch() {
-    const searchInput = document.getElementById("musicbrainSearchInput");
-    const resultElement = document.getElementById("musicbrainSearchResult");
-
-    const query = searchInput.value.trim();
-    if (!query) return;
-
-    let response;
-    try {
-        response = await fetch(
-            `/musicbrain/search?q=${encodeURIComponent(query)}`
-        );
-    } catch (e) {
-        console.error("Search failed:", e);
-        alert("Network error searching for artist.");
-        return;
-    }
-
-    const data = await response.json();
-    if (!response.ok || data.error) {
-        alert(data.message || data.error || "Problem searching for that artist.");
-        return;
-    }
-
-    // Add a new search card on top
-    renderSearchCard(data);
-}
 
 // RENDER GUESS CARD
 function renderGuessCard(comparison, guessNumber, maxGuesses) {
@@ -182,7 +139,7 @@ function renderGuessCard(comparison, guessNumber, maxGuesses) {
     card.innerHTML = `
         <div class="guess-header">
             <span class="guess-title">🎤 ${artist.name}</span>
-            <span class="guess-count">${guessNumber}/${maxGuesses}</span>
+            <span class="guess-count">Guess ${guessNumber} of ${maxGuesses}</span>
         </div>
         <div class="divider"></div>
 
@@ -233,6 +190,13 @@ function renderGameOverCard(answer, didWin = false) {
     const title = didWin ? "You Got It!" : "Game Over";
     const message = didWin ? "Nice job, you guessed the artist!" : "No guesses left.";
 
+    const capitalizeGenre = (genre) => {
+        if (!genre || genre === "Unknown") return genre;
+        return genre.split(' ').map(word => 
+            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        ).join(' ');
+    };
+
     card.innerHTML = `
         <div class="go-title">${icon} ${title}</div>
         <div class="go-text">${message}</div>
@@ -240,7 +204,8 @@ function renderGameOverCard(answer, didWin = false) {
         <div class="go-answer-header">Correct Artist:</div>
         <div class="go-answer">
             <strong>${answer.name}</strong><br>
-            Genre: ${answer.genre ?? "Unknown"}<br>
+            Gender: ${answer.gender ?? "Unknown"}<br>
+            Genre: ${capitalizeGenre(answer.genre)}<br>
             Country: ${answer.area ?? "Unknown"}<br>
             Popularity: ${answer.popularity ?? "?"}
         </div>
@@ -249,50 +214,3 @@ function renderGameOverCard(answer, didWin = false) {
     container.prepend(card);
 }
 
-//RENDER SEARCH CARD
-function renderSearchCard(artist) {
-    const resultElement = document.getElementById("musicbrainSearchResult");
-
-    const card = document.createElement("div");
-    card.classList.add("search-card");
-
-    const areaName = artist.area?.name ?? "Unknown area";
-    const popularity = artist["spotify popularity"] ?? "?";
-    const tag = artist.tag ?? "No tag";
-
-    card.innerHTML = `
-        <div class="search-header">
-            <span class="search-title">${artist.name ?? "Unknown artist"}</span>
-            <span class="search-tag-pill">${tag}</span>
-        </div>
-        <div class="search-subtitle">
-            ${areaName} • ${artist.type ?? "Artist"}
-        </div>
-        <div class="search-stats">
-            <div class="search-stat-row">
-                <span>Spotify popularity</span>
-                <span>${popularity}</span>
-            </div>
-            <div class="search-stat-row">
-                <span>Gender</span>
-                <span>${artist.gender ?? "Unknown"}</span>
-            </div>
-            <div class="search-stat-row">
-                <span>Debut / begin</span>
-                <span>${artist["life-span"]?.begin ?? "Unknown"}</span>
-            </div>
-        </div>
-    `;
-
-    // Clicking a search card uses that artist as a guess
-    card.onclick = async () => {
-        textbox.value = artist.name ?? "";
-        const guessButton = document.getElementById("guessButton");
-        showLoading(guessButton, "Checking...");
-        await textboxSubmit();
-        hideLoading(guessButton);
-    };
-
-    // Newest search on top
-    resultElement.prepend(card);
-}

@@ -9,12 +9,37 @@
 
 <div class="page-container">
 
-    <h1 id="title">Spotify Web Project</h1>
+    <h1 id="title">Music Artist Wordle</h1>
 
-    <div id="start" class="action-button">Start</div>
+    <div id="pre-game-message">7 guesses. 1 mystery artist. Ready?</div>
+
+    <div id="start" class="action-button">Play</div>
 
 
     <div id="game" class="hidden">
+        <div id="game-key">
+            <div class="key-section">
+                <div class="key-item">
+                    <span class="key-badge match">Example</span>
+                    <span class="key-text">Correct match</span>
+                </div>
+                <div class="key-item">
+                    <span class="key-badge no_match">Example</span>
+                    <span class="key-text">No match</span>
+                </div>
+            </div>
+            <div class="key-section">
+                <div class="key-item">
+                    <span class="key-badge higher">Higher</span>
+                    <span class="key-text">Popularity is higher</span>
+                </div>
+                <div class="key-item">
+                    <span class="key-badge lower">Lower</span>
+                    <span class="key-text">Popularity is lower</span>
+                </div>
+            </div>
+        </div>
+
         <h2>Guess the Artist</h2>
 
         <div id="guess-row">
@@ -25,16 +50,6 @@
         <div id="guesses"></div>
     </div>
 
-    <section id="artist-search">
-        <h2>Artist Search</h2>
-
-        <div class="search-row">
-            <input id="musicbrainSearchInput" type="text" placeholder="Search for an artist">
-            <button id="musicbrainSearchButton">Search</button>
-        </div>
-
-        <div id="musicbrainSearchResult"></div>
-    </section>
 
 </div>
 
