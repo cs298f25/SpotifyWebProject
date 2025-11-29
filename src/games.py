@@ -1,3 +1,21 @@
+import random
+
+MAX_GUESSES = 7
+
+POSSIBLE_ANSWERS = [
+    "Drake",
+    "Taylor Swift",
+    "Harry Styles",
+    "Pitbull",
+    "Adele",
+    "Kendrick Lamar",
+    "Bad Bunny",
+    "Post Malone",
+    "Lana Del Rey",
+    "The Weeknd",
+]
+
+
 class Games:
     def __init__(self, database):
         self.database = database
@@ -88,3 +106,53 @@ class Games:
             return "high"
         else:
             return "correct"
+
+    # ---------- GAME LOGIC METHODS ----------
+
+    def select_random_artist(self):
+        """Select a random artist from the possible answers list."""
+        return random.choice(POSSIBLE_ANSWERS)
+
+    def determine_game_status(self, comparison):
+        """
+        Determine the game status based on the comparison result.
+        Returns: "WON", "LOST", or "ONGOING"
+        """
+        guess_number = comparison.get("guess_number", 0)
+        is_correct = comparison.get("is_correct", False)
+
+        if is_correct:
+            return "WON"
+        elif guess_number >= MAX_GUESSES:
+            return "LOST"
+        else:
+            return "ONGOING"
+
+    def build_guess_response(self, comparison):
+        """
+        Build the response payload for a guess.
+        Returns a dictionary with status, comparison data, and answer (if game ended).
+        """
+        status = self.determine_game_status(comparison)
+        guess_number = comparison.get("guess_number", 0)
+        is_correct = comparison.get("is_correct", False)
+        answer_snapshot = comparison.get("answer_snapshot") or {}
+
+        payload = {
+            "status": status,  # ONGOING / WON / LOST
+            "is_correct": is_correct,
+            "comparison": comparison,
+            "guess_number": guess_number,
+            "max_guesses": MAX_GUESSES,
+        }
+
+        if status in ("WON", "LOST"):
+            payload["answer"] = {
+                "name": answer_snapshot.get("name"),
+                "gender": answer_snapshot.get("gender"),
+                "genre": answer_snapshot.get("genre"),
+                "area": answer_snapshot.get("area"),
+                "popularity": answer_snapshot.get("popularity"),
+            }
+
+        return payload
