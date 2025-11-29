@@ -4,7 +4,6 @@ from pathlib import Path
 import os
 import dotenv
 import sys
-import random
 
 #PATH SETUP
 project_root = Path(__file__).parent.parent
@@ -25,8 +24,6 @@ required_env = [
     "SPOTIFY_CLIENT_ID",
     "SPOTIFY_CLIENT_SECRET",
 ]
-
-MAX_GUESSES = 7
 
 INVALID_GAME_ERROR = {"error": "ERROR", "message": "Game session invalid"}
 NO_RESULT_ERROR = {"error": "ERROR", "message": "No result returned"}
@@ -74,20 +71,7 @@ def create_app(secret_key, games_service):
         """Start a new game with a random curated artist."""
         game_id = get_game_key()
 
-        possible_answers = [
-            "Drake",
-            "Taylor Swift",
-            "Harry Styles",
-            "Pitbull",
-            "Adele",
-            "Kendrick Lamar",
-            "Bad Bunny",
-            "Post Malone",
-            "Lana Del Rey",
-            "The Weeknd",
-        ]
-
-        artist_name = random.choice(possible_answers)
+        artist_name = games_service.select_random_artist()
 
         try:
             answer_data = get_artist_data_for_game(artist_name)
@@ -146,32 +130,7 @@ def create_app(secret_key, games_service):
         if comparison is None:
             return jsonify(NO_RESULT_ERROR), 400
 
-        guess_number = comparison.get("guess_number", 0)
-        is_correct = comparison.get("is_correct", False)
-
-        status = "ONGOING"
-        if is_correct:
-            status = "WON"
-        elif guess_number >= MAX_GUESSES:
-            status = "LOST"
-
-        answer_snapshot = comparison.get("answer_snapshot") or {}
-
-        payload = {
-            "status": status,  # ONGOING / WON / LOST
-            "is_correct": is_correct,
-            "comparison": comparison,
-            "guess_number": guess_number,
-            "max_guesses": MAX_GUESSES,
-        }
-
-        if status in ("WON", "LOST"):
-            payload["answer"] = {
-                "name": answer_snapshot.get("name"),
-                "genre": answer_snapshot.get("genre"),
-                "area": answer_snapshot.get("area"),
-                "popularity": answer_snapshot.get("popularity"),
-            }
+        payload = games_service.build_guess_response(comparison)
 
         return jsonify(payload), 200
 
