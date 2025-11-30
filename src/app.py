@@ -14,7 +14,7 @@ static_dir = str(project_root / "static")
 
 from database.database import Database
 from games import Games
-from musicbrain import musicbrain_bp, get_artist_data_for_game
+from musicbrain import get_artist_data_for_game
 
 #CONSTANTS
 required_env = [
@@ -60,7 +60,6 @@ def get_game_key():
 def create_app(secret_key, games_service):
     app = Flask(__name__, template_folder=template_dir, static_folder=static_dir)
     app.secret_key = secret_key
-    app.register_blueprint(musicbrain_bp, url_prefix="/musicbrain")
 
     @app.route("/")
     def home():
