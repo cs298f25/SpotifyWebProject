@@ -1,4 +1,3 @@
-![System Architecture](Screenshot%202025-12-05%20at%203.16.29%20PM.png)
 
 # SpotifyWebProject
 ### By Louis Spann, Jack Wagenheim, & Mohammad Alzoubi
