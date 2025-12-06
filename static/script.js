@@ -118,6 +118,7 @@ async function textboxSubmit() {
     }
 }
 
+
 function disableGuessing() {
     textbox.disabled = true;
     const guessButton = document.getElementById("guessButton");

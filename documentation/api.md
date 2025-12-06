@@ -11,7 +11,7 @@ The following environment variables must be set in your `.env` file:
 - `SPOTIFY_CLIENT_SECRET` (required): Your Spotify app's client secret
 
 **MusicBrainz API:**
-- `USER_EMAIL` (required): Your email address for MusicBrainz user agent identification
+- `USER_EMAIL` (optional): Your email address for MusicBrainz user agent identification (defaults to "example@example.com" if not provided)
 
 **Other:**
 - `REDIS_HOST` (required): Redis server hostname (default: `localhost`)
@@ -63,7 +63,7 @@ Internal function that authenticates with Spotify API using Client Credentials f
 }
 ```
 
-**Note:** Tokens expire after 1 hour (3600 seconds). A new token is requested each time `get_artist_popularity()` is called.
+**Note:** Tokens expire after 1 hour (3600 seconds). The token is cached and reused until it expires (approximately 3500 seconds) to avoid unnecessary token requests.
 
 #### `get_artist_popularity(query)`
 
@@ -102,36 +102,88 @@ popularity = get_artist_popularity("Pitbull")
 
 ## Integration in Application
 
-The Spotify functionality is integrated into the following application endpoint (which also uses MusicBrainz data):
+The Spotify API is used internally by the application through the `get_artist_data_for_game()` function in `src/musicbrain.py`. This function combines data from both MusicBrainz and Spotify APIs. The Spotify functionality is integrated into the following application endpoints:
 
-### `GET /musicbrain/search?q={artist_name}`
+### `GET /new-game`
 
-Returns combined MusicBrainz and Spotify data. Includes `spotify_popularity` field in the response.
+Starts a new game by selecting a random artist and fetching their data from both MusicBrainz and Spotify.
 
-**Query Parameters:**
-- `q` (string, required): Artist name to search for
+**What it does:**
+1. Selects a random artist from a curated list
+2. Calls `get_artist_data_for_game()` which:
+   - Fetches artist metadata from MusicBrainz (name, gender, area, genre/tag)
+   - Fetches popularity score from Spotify via `get_artist_popularity()`
+3. Stores the combined data as the answer for the game session
 
-**HTTP Status Codes:**
-- `200 OK`: Successful request
-- `500 Internal Server Error`: Artist not found, API error, or missing environment variables
-
-**Example Response:**
+**Response:**
 ```json
 {
-  "name": "Pitbull",
-  "type": "Person",
-  "gender": "male",
-  "life-span": {
-    "begin": "1981-01-15",
-    "ended": "false"
-  },
-  "area": {
-    "name": "United States"
-  },
-  "spotify popularity": 85,
-  "tag": "dance-pop"
+  "ok": true
 }
 ```
+
+**HTTP Status Codes:**
+- `200 OK`: Game successfully created
+- `500 Internal Server Error`: Artist lookup failed (API error, artist not found, or missing environment variables)
+
+### `POST /guess`
+
+Submits a guess for the current game. Fetches artist data from both APIs to compare against the answer.
+
+**Request Body:**
+```json
+{
+  "guess": "Taylor Swift"
+}
+```
+
+**What it does:**
+1. Validates the game session exists
+2. Calls `get_artist_data_for_game()` with the guessed artist name to fetch:
+   - MusicBrainz data (name, gender, area, genre/tag)
+   - Spotify popularity score
+3. Compares the guess against the answer
+4. Returns comparison results
+
+**Response:**
+```json
+{
+  "status": "ONGOING",
+  "is_correct": false,
+  "comparison": {
+    "is_correct": false,
+    "fields": {
+      "gender": "match",
+      "genre": "no_match",
+      "area": "match",
+      "popularity": "higher"
+    },
+    "answer_snapshot": {
+      "name": "Pitbull",
+      "gender": "male",
+      "area": "United States",
+      "genre": "dance-pop",
+      "popularity": 85
+    },
+    "guess_artist": {
+      "name": "Taylor Swift",
+      "type": "Person",
+      "gender": "male",
+      "area": {"name": "United States"},
+      "spotify popularity": 92,
+      "tag": "pop"
+    },
+    "guess_number": 1
+  },
+  "guess_number": 1,
+  "max_guesses": 7
+}
+```
+
+**HTTP Status Codes:**
+- `200 OK`: Guess processed successfully
+- `400 Bad Request`: Invalid game session or empty guess
+- `500 Internal Server Error`: Artist lookup failed (could not find the guessed artist)
 
 ### Rate Limiting
 Spotify API enforces rate limits to prevent abuse. The rate limit is based on the number of calls your application makes within a rolling 30-second window. The exact limits may vary:
@@ -174,13 +226,13 @@ https://musicbrainz.org/ws/2
 ## Authentication
 MusicBrainz requires setting a user agent to identify your application. The user agent includes:
 - Application name: "ArtistGuesser"
-- Version: "2.0"
-- Contact email: Set via `USER_EMAIL` environment variable (note developer must provide a email to establish a connection to the music brainz api)
+- Version: "1.0"
+- Contact email: Set via `USER_EMAIL` environment variable (note developer must provide an email to establish a connection to the MusicBrainz API)
 
 
 ## MusicBrainz API Usage in This Application
 
-The application uses MusicBrainz API through functions in `src/musicbrain.py`. The main endpoint is exposed as a Flask route.
+The application uses MusicBrainz API through functions in `src/musicbrain.py`. These functions are not exposed as Flask endpoints but are used internally by other parts of the application.
 
 ### Helper Functions
 
@@ -242,16 +294,20 @@ tag = get_artist_highest_tag("Pitbull")
 # Returns: {"count": "7", "name": "dance-pop"}
 ```
 
-### Flask Endpoints
+#### `get_artist_data_for_game(query)`
 
-#### `GET /musicbrain/search?q={artist_name}`
+Main function that combines MusicBrainz and Spotify data for use in the game.
 
-Searches for an artist and returns filtered data including Spotify popularity.
+**Parameters:**
+- `query` (string, required): Artist name to search for
 
-**Query Parameters:**
-- `q` (string, required): Artist name to search for
+**What it does:**
+1. Calls `_get_full_artist_by_query()` to get MusicBrainz data
+2. Filters to the highest tag using `_filter_to_highest_tag()`
+3. Calls `get_artist_popularity()` from `spotify.py` to get Spotify popularity
+4. Combines and filters the data into a structured format
 
-**Response:**
+**Returns:**
 ```json
 {
   "name": "Pitbull",
@@ -273,6 +329,8 @@ Searches for an artist and returns filtered data including Spotify popularity.
 - `musicbrainzngs.search_artists()` - Searches for artists
 - `musicbrainzngs.get_artist_by_id()` - Gets full artist details with tags
 
+**Note:** The MusicBrainz API is integrated into the application endpoints (`GET /new-game` and `POST /guess`) through the `get_artist_data_for_game()` function, which combines MusicBrainz and Spotify data. See the "Integration in Application" section under Spotify Web API for details on how both APIs are used together.
+
 ### Rate Limiting
 MusicBrainz API has rate limits:
 - **Default**: 1 request per second per IP address
@@ -281,7 +339,7 @@ MusicBrainz API has rate limits:
 - The `musicbrainzngs` library may handle some rate limiting automatically
 
 ### Errors
-- Missing `USER_EMAIL` environment variable (may cause issues with user agent)
+- Missing `USER_EMAIL` environment variable (optional, but recommended; defaults to "example@example.com")
 - No artists found for search query (raises `IndexError` when accessing `artist-list[0]`)
 - Network or connectivity issues with MusicBrainz API
 - Empty tag list (no tags available for artist) - returns `None` for tag field
@@ -290,7 +348,7 @@ MusicBrainz API has rate limits:
 - **SSL Certificate Verification Error** (common on macOS): `[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate`. If you're using macOS go to Macintosh HD > Applications > Python, and double click on the "Install Certificates.command" file.
 
 **Error Handling:**
-- The application does not catch or handle exceptions from MusicBrainz API calls
-- Errors will propagate to Flask and return `500 Internal Server Error`
+- The application catches exceptions from MusicBrainz API calls in the Flask endpoints (`/new-game` and `/guess`)
+- Errors are caught and return appropriate error messages with `500 Internal Server Error` status
 - Missing tags are handled gracefully (returns `None` instead of raising an error)
 - SSL certificate issues are resolved by installing `certifi` and configuring urllib to use it (see `src/musicbrain.py`)

@@ -12,7 +12,7 @@ POSSIBLE_ANSWERS = [
     "Bad Bunny",
     "Post Malone",
     "Lana Del Rey",
-    "The Weeknd",
+    "The Weekend",
 ]
 
 
